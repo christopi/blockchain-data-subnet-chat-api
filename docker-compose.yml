@@ -1,0 +1,47 @@
+version: '3'
+services:
+  # FastAPI Application
+  chat-api:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST:-postgresql}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-chat_db}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - SECRET_KEY=Justarandomstring
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+      - APP_HOST=${APP_HOST:-0.0.0.0}
+      - EMAIL_SENDER=${EMAIL_SENDER}
+    depends_on:
+      - postgresql
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+    networks:
+      - api-network
+
+  postgresql:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB={$POSTGRES_DB:-chat_db}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - api-network
+
+networks:
+  api-network:
+
+volumes:
+  postgres-data:

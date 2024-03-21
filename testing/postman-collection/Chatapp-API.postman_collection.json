@@ -1,0 +1,739 @@
+{
+	"info": {
+		"_postman_id": "f772abbf-f9d3-46f3-8e0c-89ec169398dd",
+		"name": "Chatapp-API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33913557"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"An access token is returned\", () => {",
+									"    pm.expect(pm.response.json()).to.have.property('token')",
+									"    pm.expect(pm.response.json().token).to.be.a('string')",
+									"    // Set the collection-scope \"token\" variable to the token received from the API",
+									"    // This lets us use it in other requests",
+									"    pm.collectionVariables.set('token', pm.response.json().token)",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"username\": \"dumyuser_1\",\r\n  \"email\": \"dumyuser_1@example.com\",\r\n  \"password\": \"dumyuser_1_pwd\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"register"
+							]
+						},
+						"description": "This returns a `token` that you can use to retrieve information later on.\n\nWe have included a test to confirm if a token is returned. We have also added test scripts to copy the token to the `token` collection variable. This makes it easy for us to reuse this token in other requests in the collection."
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "dumyuser_1",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "dumyuser_1_pwd",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/token",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkdW15dXNlcl8xIiwiZXhwIjoxNzEyNTk1MzYyfQ.CnT-mKm3gOFlV16eHlBC3P_ItJGMmH_RIun900yjPCo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/refresh_token",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"refresh_token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"dumyuser_1@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/forgot_password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"forgot_password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"token\": \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkdW15dXNlcl8xIiwiZXhwIjoxNzExNTk2OTAwfQ.5ofezcJl0zkDeKvPe0kZJdHkHkFMvGmxacxgINEFqu8\",\r\n  \"new_password\": \"dumyuser_1_pwd_reset\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/reset_password",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"reset_password"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "This folder contains the backend APIs for authentication."
+		},
+		{
+			"name": "Chat",
+			"item": [
+				{
+					"name": "Post Chat",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"An access token is returned\", () => {",
+									"    pm.expect(pm.response.json()).to.have.property('token')",
+									"    pm.expect(pm.response.json().token).to.be.a('string')",
+									"    // Set the collection-scope \"token\" variable to the token received from the API",
+									"    // This lets us use it in other requests",
+									"    pm.collectionVariables.set('token', pm.response.json().token)",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkdW15dXNlcl8xIiwiZXhwIjoxNzExNTk2OTAwfQ.5ofezcJl0zkDeKvPe0kZJdHkHkFMvGmxacxgINEFqu8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"agent_id\": 1,\r\n  \"name\": \"chat-room-1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chats/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chats",
+								""
+							]
+						},
+						"description": "This returns a `token` that you can use to retrieve information later on.\n\nWe have included a test to confirm if a token is returned. We have also added test scripts to copy the token to the `token` collection variable. This makes it easy for us to reuse this token in other requests in the collection."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Chats",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"An access token is returned\", () => {",
+									"    pm.expect(pm.response.json()).to.have.property('token')",
+									"    pm.expect(pm.response.json().token).to.be.a('string')",
+									"    // Set the collection-scope \"token\" variable to the token received from the API",
+									"    // This lets us use it in other requests",
+									"    pm.collectionVariables.set('token', pm.response.json().token)",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkdW15dXNlcl8xIiwiZXhwIjoxNzExNTk2OTAwfQ.5ofezcJl0zkDeKvPe0kZJdHkHkFMvGmxacxgINEFqu8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chats/?skip=0&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chats",
+								""
+							],
+							"query": [
+								{
+									"key": "skip",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "This returns a `token` that you can use to retrieve information later on.\n\nWe have included a test to confirm if a token is returned. We have also added test scripts to copy the token to the `token` collection variable. This makes it easy for us to reuse this token in other requests in the collection."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chat",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"An access token is returned\", () => {",
+									"    pm.expect(pm.response.json()).to.have.property('token')",
+									"    pm.expect(pm.response.json().token).to.be.a('string')",
+									"    // Set the collection-scope \"token\" variable to the token received from the API",
+									"    // This lets us use it in other requests",
+									"    pm.collectionVariables.set('token', pm.response.json().token)",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkdW15dXNlcl8xIiwiZXhwIjoxNzExNTk2OTAwfQ.5ofezcJl0zkDeKvPe0kZJdHkHkFMvGmxacxgINEFqu8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chats/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chats",
+								"1"
+							]
+						},
+						"description": "This returns a `token` that you can use to retrieve information later on.\n\nWe have included a test to confirm if a token is returned. We have also added test scripts to copy the token to the `token` collection variable. This makes it easy for us to reuse this token in other requests in the collection."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Chat",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"An access token is returned\", () => {",
+									"    pm.expect(pm.response.json()).to.have.property('token')",
+									"    pm.expect(pm.response.json().token).to.be.a('string')",
+									"    // Set the collection-scope \"token\" variable to the token received from the API",
+									"    // This lets us use it in other requests",
+									"    pm.collectionVariables.set('token', pm.response.json().token)",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkdW15dXNlcl8xIiwiZXhwIjoxNzExNTk2OTAwfQ.5ofezcJl0zkDeKvPe0kZJdHkHkFMvGmxacxgINEFqu8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chats/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chats",
+								"1"
+							]
+						},
+						"description": "This returns a `token` that you can use to retrieve information later on.\n\nWe have included a test to confirm if a token is returned. We have also added test scripts to copy the token to the `token` collection variable. This makes it easy for us to reuse this token in other requests in the collection."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Chat",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"An access token is returned\", () => {",
+									"    pm.expect(pm.response.json()).to.have.property('token')",
+									"    pm.expect(pm.response.json().token).to.be.a('string')",
+									"    // Set the collection-scope \"token\" variable to the token received from the API",
+									"    // This lets us use it in other requests",
+									"    pm.collectionVariables.set('token', pm.response.json().token)",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkdW15dXNlcl8xIiwiZXhwIjoxNzExNTk2OTAwfQ.5ofezcJl0zkDeKvPe0kZJdHkHkFMvGmxacxgINEFqu8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chats/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chats",
+								"1"
+							]
+						},
+						"description": "This returns a `token` that you can use to retrieve information later on.\n\nWe have included a test to confirm if a token is returned. We have also added test scripts to copy the token to the `token` collection variable. This makes it easy for us to reuse this token in other requests in the collection."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"An access token is returned\", () => {",
+									"    pm.expect(pm.response.json()).to.have.property('token')",
+									"    pm.expect(pm.response.json().token).to.be.a('string')",
+									"    // Set the collection-scope \"token\" variable to the token received from the API",
+									"    // This lets us use it in other requests",
+									"    pm.collectionVariables.set('token', pm.response.json().token)",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkdW15dXNlcl8xIiwiZXhwIjoxNzExNTk2OTAwfQ.5ofezcJl0zkDeKvPe0kZJdHkHkFMvGmxacxgINEFqu8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": 0,\r\n  \"content\": \"string\",\r\n  \"variations\": [\r\n    {\r\n      \"id\": 0,\r\n      \"message_id\": 0,\r\n      \"content\": \"string\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chats/1/message/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chats",
+								"1",
+								"message",
+								""
+							]
+						},
+						"description": "This returns a `token` that you can use to retrieve information later on.\n\nWe have included a test to confirm if a token is returned. We have also added test scripts to copy the token to the `token` collection variable. This makes it easy for us to reuse this token in other requests in the collection."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chat Message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"An access token is returned\", () => {",
+									"    pm.expect(pm.response.json()).to.have.property('token')",
+									"    pm.expect(pm.response.json().token).to.be.a('string')",
+									"    // Set the collection-scope \"token\" variable to the token received from the API",
+									"    // This lets us use it in other requests",
+									"    pm.collectionVariables.set('token', pm.response.json().token)",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkdW15dXNlcl8xIiwiZXhwIjoxNzExNTk2OTAwfQ.5ofezcJl0zkDeKvPe0kZJdHkHkFMvGmxacxgINEFqu8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chats/1/message/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chats",
+								"1",
+								"message",
+								""
+							]
+						},
+						"description": "This returns a `token` that you can use to retrieve information later on.\n\nWe have included a test to confirm if a token is returned. We have also added test scripts to copy the token to the `token` collection variable. This makes it easy for us to reuse this token in other requests in the collection."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Message",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"An access token is returned\", () => {",
+									"    pm.expect(pm.response.json()).to.have.property('token')",
+									"    pm.expect(pm.response.json().token).to.be.a('string')",
+									"    // Set the collection-scope \"token\" variable to the token received from the API",
+									"    // This lets us use it in other requests",
+									"    pm.collectionVariables.set('token', pm.response.json().token)",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkdW15dXNlcl8xIiwiZXhwIjoxNzExNTk2OTAwfQ.5ofezcJl0zkDeKvPe0kZJdHkHkFMvGmxacxgINEFqu8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chats/1/message/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chats",
+								"1",
+								"message",
+								"2"
+							]
+						},
+						"description": "This returns a `token` that you can use to retrieve information later on.\n\nWe have included a test to confirm if a token is returned. We have also added test scripts to copy the token to the `token` collection variable. This makes it easy for us to reuse this token in other requests in the collection."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Message Variation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"An access token is returned\", () => {",
+									"    pm.expect(pm.response.json()).to.have.property('token')",
+									"    pm.expect(pm.response.json().token).to.be.a('string')",
+									"    // Set the collection-scope \"token\" variable to the token received from the API",
+									"    // This lets us use it in other requests",
+									"    pm.collectionVariables.set('token', pm.response.json().token)",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkdW15dXNlcl8xIiwiZXhwIjoxNzExNTk2OTAwfQ.5ofezcJl0zkDeKvPe0kZJdHkHkFMvGmxacxgINEFqu8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"message_id\": 0,\r\n  \"content\": \"updated content\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chats/1/message/2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chats",
+								"1",
+								"message",
+								"2"
+							]
+						},
+						"description": "This returns a `token` that you can use to retrieve information later on.\n\nWe have included a test to confirm if a token is returned. We have also added test scripts to copy the token to the `token` collection variable. This makes it easy for us to reuse this token in other requests in the collection."
+					},
+					"response": []
+				}
+			],
+			"description": "This folder contains the backend APIs for chat feature."
+		}
+	]
+}

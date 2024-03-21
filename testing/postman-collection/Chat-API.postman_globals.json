@@ -1,0 +1,15 @@
+{
+	"id": "14f2653d-0973-4709-8d23-beb53444fd29",
+	"values": [
+		{
+			"key": "baseUrl",
+			"value": "https://chat-api-dev.chain-insights.ai/api/v1",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"name": "Globals",
+	"_postman_variable_scope": "globals",
+	"_postman_exported_at": "2024-04-01T17:02:21.584Z",
+	"_postman_exported_using": "Postman/10.24.11"
+}
