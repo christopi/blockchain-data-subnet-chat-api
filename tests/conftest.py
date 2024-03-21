@@ -38,22 +38,6 @@ async def migrated_postgres(pg_url):
         yield migrated_db_url
 
 
-@pytest.fixture(scope="session")
-async def sessionmanager_for_tests(migrated_postgres):
-    logging.debug("Starting sessionmanager_for_tests")
-    db_manager.init(db_url=migrated_postgres)
-    try:
-        yield db_manager
-    finally:
-        logging.debug("Tearing down sessionmanager_for_tests")
-        await db_manager.close()
-
-
-@pytest.fixture()
-async def session(sessionmanager_for_tests):
-    async with db_manager.session() as session:
-        yield session
-
 """
 @pytest.fixture(scope="session", autouse=True)
 def cleanup_database(sessionmanager_for_tests):
