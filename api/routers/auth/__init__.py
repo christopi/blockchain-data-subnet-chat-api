@@ -163,6 +163,81 @@ async def register_user(user: UserRegistrationSchema, db: AsyncSession = Depends
         await db.rollback()
         return JSONResponse(status_code=500, content={"detail": str(e)})
 
+def send_verification_email(recipient_email: str, verification_link: str):
+    """
+    Send the verification email to the user.
+
+    This function sends a verification email to the specified recipient email address with the provided verification link.
+
+    This function sends an email to the specified recipient email address with the verification link.
+
+    **Parameters:**
+    - `recipient_email` (str): The email address of the recipient.
+    - `verification_link` (str): The password reset link to be included in the email.
+
+    **Raises:**
+    - `Exception`: If an error occurs while sending the email.
+    """
+
+    # This assumes you have 'AZURE_COMMUNICATION_SERVICE_CONNECTION_STRING' in your environment variables
+    connection_string = os.getenv('AZURE_COMMUNICATION_SERVICE_CONNECTION_STRING')
+    try:
+        client = EmailClient.from_connection_string(connection_string)
+
+        message = {
+            "senderAddress": "DoNotReply@e156441a-cd79-4c6f-9a10-f74ceba5d9af.azurecomm.net",
+            "recipients":  {
+                "to": [{"address": recipient_email }],
+            },
+            "content": {
+                "subject": "Verify your email",
+                "plainText": verification_link,
+            }
+        }
+
+        poller = client.begin_send(message)
+        result = poller.result()
+
+    except Exception as ex:
+        print(ex)
+
+@router.post("/verify")
+async def verify_email_access_token(access_token: str, db: AsyncSession = Depends(get_db)):
+    """
+    Verify the user's email using the access token.
+
+    This endpoint verifies the user's email by validating the provided access token.
+
+    **Parameters:**
+    - `access_token` (str): The access token received from the verification link.
+
+    **Returns:**
+    - `dict`: The verification result.
+        - `message` (str): The result message.
+
+    **Raises:**
+    - `HTTPException`: If the access token is invalid or expired (status code 400).
+
+    """
+    try:
+        payload = jwt.decode(access_token, settings.secret_key, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        
+        # Update user's is_verified field in the database
+        user_q = select(User).where(User.email == email)
+        user = await db.execute(user_q)
+        user = user.first()[0]
+        
+        if not user:
+            raise HTTPException(status_code=400, detail="User not found")
+        user.is_verified = True
+        await db.commit()
+
+        return {"message": "Email verified successfully"}
+
+    except JWTError:
+        raise HTTPException(status_code=400, detail="Invalid or expired access token")
+
 @router.post("/token", tags=["authentication"])
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)):
     """
